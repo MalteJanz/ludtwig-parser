@@ -16,3 +16,8 @@ It is developed together with the [ludtwig](https://github.com/MalteJanz/ludtwig
 
 ## License
 MIT - see [LICENSE](https://github.com/MalteJanz/ludtwig-parser/blob/main/LICENSE) file.
+
+### License notices
+For testing purposes this repository also includes code from the following sources:
+- [Shopware](https://github.com/shopware/platform) - [MIT](https://github.com/shopware/platform/blob/master/LICENSE)
+- [SwagMigrationAssistant](https://github.com/shopware/SwagMigrationAssistant) - [MIT](https://github.com/shopware/SwagMigrationAssistant/blob/master/LICENSE)
