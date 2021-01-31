@@ -1,6 +1,6 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use ludtwig_parser::parse;
 use std::fs;
-use twig::parse;
 
 fn parsing_benchmark(c: &mut Criterion) {
     let input = fs::read_to_string("./fixtures/complex.html.twig")
