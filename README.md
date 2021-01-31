@@ -1,4 +1,8 @@
 # Ludtwig-Parser
+![GitHub](https://img.shields.io/github/license/MalteJanz/ludtwig-parser?color=blue&style=flat-square)
+![Crates.io](https://img.shields.io/crates/v/ludtwig-parser?style=flat-square)
+![Crates.io](https://img.shields.io/crates/d/ludtwig-parser?style=flat-square)
+
 Rust crate that parses twig / html / vue.js templating syntax into an AST (abstract syntax tree).
 It does not conform to any spec and the input is required to be as idiomatic as possible.
 For example missing closing tags in html result in a parsing error (even if browsers can interpret the html and reconstruct the closing tag).
@@ -9,4 +13,4 @@ This crate is still in early development and the API can break with any release 
 It is developed together with the [ludtwig](https://github.com/MalteJanz/ludtwig) CLI application for formatting and analyzing templating files.
 
 ## License
-MIT - see LICENSE file.
+MIT - see [LICENSE](https://github.com/MalteJanz/ludtwig-parser/blob/main/LICENSE) file.
