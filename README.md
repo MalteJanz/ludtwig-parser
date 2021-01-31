@@ -1,5 +1,5 @@
 # Ludtwig-Parser
-Parses twig / html / vue.js templating syntax into an AST (abstract syntax tree).
+Rust crate that parses twig / html / vue.js templating syntax into an AST (abstract syntax tree).
 It does not conform to any spec and the input is required to be as idiomatic as possible.
 For example missing closing tags in html result in a parsing error (even if browsers can interpret the html and reconstruct the closing tag).
 This makes it possible to represent the template in a hierarchical AST.

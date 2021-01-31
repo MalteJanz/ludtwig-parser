@@ -1,6 +1,9 @@
 [package]
 name = "ludtwig-parser"
 description = "Parser for twig / html / vue templating syntax."
+keywords = ["parser", "twig", "html", "vue", "template"]
+categories = ["parser-implementations"]
+repository = "https://github.com/MalteJanz/ludtwig-parser"
 version = "0.2.0"
 authors = ["Malte Janz <malte.janz@yahoo.de>"]
 license = "MIT"
