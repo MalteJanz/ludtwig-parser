@@ -28,5 +28,41 @@ fn failing_parsing_benchmark(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, parsing_benchmark, failing_parsing_benchmark);
+fn ast_basic_iteration_benchmark(c: &mut Criterion) {
+    let input = fs::read_to_string("./fixtures/complex.html.twig")
+        .expect("can't find fixtures/complex.html.twig in project folder");
+
+    let ast = parse(&input).expect("can't parse complex.html.twig");
+
+    c.bench_function("basic iteration over AST of complex.html.twig", |b| {
+        b.iter(|| {
+            for item in ast.iter() {
+                black_box(item);
+            }
+        })
+    });
+}
+
+fn ast_context_iteration_benchmark(c: &mut Criterion) {
+    let input = fs::read_to_string("./fixtures/complex.html.twig")
+        .expect("can't find fixtures/complex.html.twig in project folder");
+
+    let ast = parse(&input).expect("can't parse complex.html.twig");
+
+    c.bench_function("context iteration over AST of complex.html.twig", |b| {
+        b.iter(|| {
+            for item in ast.context_iter() {
+                black_box(item);
+            }
+        })
+    });
+}
+
+criterion_group!(
+    benches,
+    parsing_benchmark,
+    failing_parsing_benchmark,
+    ast_basic_iteration_benchmark,
+    ast_context_iteration_benchmark
+);
 criterion_main!(benches);
