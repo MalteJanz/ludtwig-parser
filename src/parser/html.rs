@@ -1,38 +1,39 @@
 use super::IResult;
 use crate::ast::*;
-use crate::parser::expression::expression_block;
 use crate::parser::general::{
     document_node, dynamic_context, DynamicChildParser, GenericChildParser, Input,
 };
-use crate::parser::twig::{twig_comment, twig_structure, twig_syntax};
+use crate::parser::twig::{twig_comment, twig_structure};
 use nom::branch::alt;
-use nom::bytes::complete::{tag, take_till1};
+use nom::bytes::complete::{tag, take_till1, take_until};
 use nom::character::complete::{anychar, char, multispace0, none_of};
 use nom::combinator::{cut, map, map_opt, not, opt, peek, recognize, value};
 use nom::error::context;
 use nom::multi::{many0, many1, many_till};
-use nom::sequence::{delimited, preceded, terminated};
+use nom::sequence::{delimited, preceded, terminated, tuple};
 
 static NON_CLOSING_TAGS: [&str; 7] = ["!DOCTYPE", "meta", "input", "img", "br", "hr", "source"];
 
 pub(crate) fn html_tag_html_attribute(input: Input) -> IResult<TagAttribute> {
     let (input, key) = alt((
-        recognize(expression_block), // allow the key to be an expression block but match the consumed input with {{ ... }}
         take_till1(|c| {
             c == '='
-            || c == ' '
-            || c == '>'
-            || c == '/'
-            || c == '<'
-            || c == '"'
-            || c == '{' // skip attribute names that start with '{' because the syntax is reserved for twig.
-            || c == '\n'
-            || c == '\r'
-            || c == '\t'
+                || c == ' '
+                || c == '>'
+                || c == '/'
+                || c == '<'
+                || c == '"'
+                || c == '{' // skip attribute names that start with '{' because the syntax is reserved for twig.
+                || c == '\n'
+                || c == '\r'
+                || c == '\t'
         }),
+        // allow the key to be an expression block but match the consumed input with {{ ... }}
+        // this is a simplified version of the [expression_block] parser to increase performance
+        recognize(tuple((tag("{{"), take_until("}}"), tag("}}")))),
     ))(input)?;
     let (input, _) = multispace0(input)?; // allow whitespace between equals
-    let (input, equal) = opt(tag("="))(input)?;
+    let (input, equal) = opt(char('='))(input)?;
     let (input, _) = multispace0(input)?; // allow whitespace between equals
 
     if equal == None {
@@ -47,20 +48,24 @@ pub(crate) fn html_tag_html_attribute(input: Input) -> IResult<TagAttribute> {
         ));
     }
 
-    let (input, _) = context("missing '\"' quote", cut(tag("\"")))(input)?;
-    // try first to parse any "{{ ... }}" output expression or twig syntax as value, because it could contain more quotes ""
-    // otherwise parse any input until the next quote " is found
+    let (input, _) = context("missing '\"' quote", cut(char('"')))(input)?;
+
+    // a value can contain anything until it ends with a quote "
+    // to allow nested quotes in twig expressions it tries to parse syntax blocks when it runs into a '{'
+    // syntax blocks can contain anything in them (even quotes ")
+    // if it is not a twig syntax block it can also be a { } block from javascript
     let (input, value) = recognize(many_till(
         alt((
-            recognize(expression_block),
-            recognize(twig_syntax),
-            recognize(twig_comment),
-            recognize(none_of("\"")),
+            recognize(take_till1(|c| c == '"' || c == '{')),
+            recognize(tuple((tag("{{"), take_until("}}"), tag("}}")))),
+            recognize(tuple((tag("{%"), take_until("%}"), tag("%}")))),
+            recognize(tuple((tag("{#"), take_until("#}"), tag("#}")))),
+            recognize(tuple((char('{'), take_till1(|c| c == '}'), char('}')))), // allow any javascript block { syntax }
         )),
-        peek(tag("\"")),
+        peek(char('"')),
     ))(input)?;
 
-    let (input, _) = context("missing '\"' quote", cut(tag("\"")))(input)?;
+    let (input, _) = context("missing '\"' quote", cut(char('"')))(input)?;
 
     Ok((
         input,
@@ -529,7 +534,7 @@ mod tests {
             Err(nom::Err::Failure(TwigParsingErrorInformation {
                 leftover: "#\"",
                 context: Some("missing '\"' quote".into()),
-                kind: ErrorKind::Tag
+                kind: ErrorKind::Not
             }))
         );
     }
