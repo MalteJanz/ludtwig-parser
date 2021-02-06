@@ -3,6 +3,11 @@
 
 use std::fmt::{Display, Formatter};
 
+// Re-export types for iteration over the AST from the private modules.
+pub use crate::ast_context_iter::AstContextIterator;
+pub use crate::ast_context_iter::IteratorContext;
+pub use crate::ast_iter::AstIterator;
+
 /// The base enum for each syntax element in a document.
 /// Each variant represents some sort of structured representation of the document syntax.
 /// This is the foundation for the AST (abstract syntax tree) that is produced by the parser.
@@ -54,6 +59,16 @@ pub enum SyntaxNode {
     /// This is preferred over [TwigStatement] by the parser if it sees special keywords like `block` right after the `{% `.
     ///
     TwigStructure(TwigStructure<SyntaxNode>),
+}
+
+impl SyntaxNode {
+    pub fn is_whitespace(&self) -> bool {
+        if let SyntaxNode::Whitespace = self {
+            return true;
+        }
+
+        false
+    }
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
@@ -185,25 +200,6 @@ impl Display for TwigStructure<TagAttribute> {
     }
 }
 
-/// Every AST data structure that implements this trait has a list of children (of type [SyntaxNode]).
-pub trait HasChildren<C> {
-    /// Get the children of this AST node.
-    fn get_children(&self) -> &[C];
-}
-/*
-impl HasChildren for TwigStructure {
-    fn get_children(&self) -> &[SyntaxNode] {
-        match self {
-            TwigStructure::TwigBlock(p) => p.get_children(),
-            TwigStructure::TwigFor(p) => p.get_children(),
-            TwigStructure::TwigIf(p) => p.get_children(), // how to handle this? is it really needed?
-            TwigStructure::TwigApply(p) => p.get_children(),
-            TwigStructure::TwigSetCapture(p) => p.get_children(),
-        }
-    }
-}
-*/
-
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum TagAttribute {
     HtmlAttribute(HtmlAttribute),
@@ -280,12 +276,6 @@ impl Tag {
     }
 }
 
-impl HasChildren<SyntaxNode> for Tag {
-    fn get_children(&self) -> &[SyntaxNode] {
-        self.children.as_ref()
-    }
-}
-
 /// Represents one line of plain text in the html document without line break characters or indentation.
 #[derive(Debug, Eq, PartialEq, Clone, Default)]
 pub struct Plain {
@@ -358,12 +348,6 @@ impl<C> TwigBlock<C> {
     }
 }
 
-impl<C> HasChildren<C> for TwigBlock<C> {
-    fn get_children(&self) -> &[C] {
-        self.children.as_ref()
-    }
-}
-
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TwigFor<C> {
     pub expression: String,
@@ -385,12 +369,6 @@ impl<C> TwigFor<C> {
             expression,
             children,
         }
-    }
-}
-
-impl<C> HasChildren<C> for TwigFor<C> {
-    fn get_children(&self) -> &[C] {
-        self.children.as_ref()
     }
 }
 
@@ -436,12 +414,6 @@ impl<C> Default for TwigIfArm<C> {
     }
 }
 
-impl<C> HasChildren<C> for TwigIfArm<C> {
-    fn get_children(&self) -> &[C] {
-        self.children.as_ref()
-    }
-}
-
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TwigApply<C> {
     pub expression: String,
@@ -466,12 +438,6 @@ impl<C> TwigApply<C> {
     }
 }
 
-impl<C> HasChildren<C> for TwigApply<C> {
-    fn get_children(&self) -> &[C] {
-        self.children.as_ref()
-    }
-}
-
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TwigSetCapture<C> {
     pub name: String,
@@ -490,11 +456,5 @@ impl<C> Default for TwigSetCapture<C> {
 impl<C> TwigSetCapture<C> {
     pub fn new(name: String, children: Vec<C>) -> Self {
         Self { name, children }
-    }
-}
-
-impl<C> HasChildren<C> for TwigSetCapture<C> {
-    fn get_children(&self) -> &[C] {
-        self.children.as_ref()
     }
 }

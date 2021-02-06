@@ -1,4 +1,6 @@
 pub mod ast;
+mod ast_context_iter;
+mod ast_iter;
 pub mod error;
 mod parser;
 
