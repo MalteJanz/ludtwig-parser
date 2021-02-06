@@ -1,4 +1,7 @@
 # NEXT-VERSION
+
+
+# v0.3.0
 - Mostly fixed a performance regression:
   Average template parsing performance is increased by ~295% since last version \[266us -> 87us\].
   It is still ~10% \[from 78us\] behind the performance before the advanced html tag attribute parsing was implemented
