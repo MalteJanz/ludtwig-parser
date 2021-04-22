@@ -159,15 +159,14 @@ mod tests {
 
     #[test]
     fn test_missing_quote_in_tag_argument() {
-        let input = "
-                <p class=swag-migration-index-modal-abort-migration-confirm-dialog-hint\">
+        let input = "<p class=swag-migration-index-modal-abort-migration-confirm-dialog-hint\">
                     Hello world
                 </p>";
         let result = parse(input).unwrap_err();
 
         let pretty = result.pretty_helpful_error_string(input);
         //println!("{}", pretty);
-        assert_eq!(pretty, "Parsing goes wrong in line 1 and column 26 :\n                <p class=swag-migration-index-modal-abort-migration-confirm-dialog-hint\">\n                         ^\n                         |\nmissing \'\"\' quote");
+        assert_eq!(pretty, "Parsing goes wrong in line 1 and column 10 :\n<p class=swag-migration-index-modal-abort-migration-confirm-dialog-hint\">\n         ^\n         |\nmissing \'\"\' quote");
     }
 
     #[test]

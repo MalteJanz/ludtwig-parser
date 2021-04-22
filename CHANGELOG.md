@@ -1,5 +1,7 @@
 # NEXT-VERSION
-
+- [Bugfix #2](https://github.com/MalteJanz/ludtwig-parser/issues/2):
+  Line and column numbers for the human-readable errors should now be correct regardless of the line ending.
+  They now also work correctly with utf-8 files.
 
 # v0.3.0
 - Mostly fixed a performance regression:
