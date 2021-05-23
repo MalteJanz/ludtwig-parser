@@ -262,12 +262,10 @@ pub(crate) fn twig_set_capture_block<R, T: GenericChildParser<R>>(
 pub(crate) fn twig_if_block<R, T: GenericChildParser<R>>(input: Input) -> IResult<TwigIf<R>> {
     let (remaining, expression) = twig_expression_opening_block(input)?;
     let (remaining, children) = T::generic_parse_children(remaining)?;
-    let mut arms = vec![];
-
-    arms.push(TwigIfArm {
+    let mut arms = vec![TwigIfArm {
         expression: Some(expression),
         children,
-    });
+    }];
 
     let mut outer_remaining = remaining;
     loop {
