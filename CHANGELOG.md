@@ -1,5 +1,8 @@
 # NEXT-VERSION
 
+# v0.3.2
+- Hotfix: fixed a panic (array index out of bounds) for the parsing error line and column numbers reconstruction.
+
 # v0.3.1
 - [Bugfix #2](https://github.com/MalteJanz/ludtwig-parser/issues/2):
   Line and column numbers for the human-readable errors should now be correct regardless of the line ending.

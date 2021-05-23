@@ -23,6 +23,7 @@ pub fn parse(input: Input) -> Result<SyntaxNode, TwigParseError<Input>> {
 mod tests {
     use super::*;
     use ast::*;
+    use std::fs;
 
     /*
     The input or output data for testing purposes is partially from the following sources and under copyright!
@@ -179,5 +180,16 @@ mod tests {
         let pretty = result.pretty_helpful_error_string(input);
         //println!("{}", pretty);
         assert_eq!(pretty, "Parsing goes wrong in line 1 and column 44 :\n<sw-button size=\"small @click=\"onCloseModal\">\n                                           ^\n                                           |\ninvalid attribute name");
+    }
+
+    #[test]
+    fn test_helpful_error_edge_case_should_not_panic() {
+        let input = fs::read_to_string("./fixtures/invalid.xml.twig")
+            .expect("can't find fixtures/invalid.xml.twig");
+        let result = parse(&input).unwrap_err();
+
+        let pretty = result.pretty_helpful_error_string(&input);
+        //println!("{}", pretty);
+        assert_eq!(pretty, "Parsing goes wrong in line 15 and column 1 :\n\n^\n|\nMissing closing tag for opening tag \'channel\' with attributes [ ]");
     }
 }

@@ -234,7 +234,7 @@ fn get_line_and_column_of_subslice<'a>(
     }
 
     // get the last line slice
-    let last_line = &input[line_start_offset..last_line_ending + 1];
+    let last_line = &input[line_start_offset..min(last_line_ending + 1, input.len())];
 
     if !tab_in_line_found {
         return (line, column, Cow::Borrowed(last_line));
