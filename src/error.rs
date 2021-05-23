@@ -220,8 +220,13 @@ fn get_line_and_column_of_subslice<'a>(
     }
 
     // find the next line ending (to construct the last line)
-    let mut last_line_ending = input.len() - 1;
-    for (i, char) in input[min(input.len() - 1, offset + 1)..].char_indices() {
+    let mut last_line_ending = if !input.is_empty() {
+        input.len() - 1
+    } else {
+        0
+    };
+    let last_line_char_iter = input[min(last_line_ending, offset + 1)..].char_indices();
+    for (i, char) in last_line_char_iter {
         // find the next line break ('\n' or '\r\n')
         if char == '\n' || char == '\r' {
             last_line_ending = i + offset;
@@ -329,5 +334,29 @@ mod tests {
         assert_eq!(lines, 3);
         assert_eq!(columns, 7);
         assert_eq!(last_line, "third🙂line");
+    }
+
+    #[test]
+    fn test_line_and_column_info_at_eof() {
+        let whole = "first line\nsecond line\nthird🙂line\nfourth line\n";
+        let sub = &whole[whole.len()..];
+
+        let (lines, columns, last_line) = get_line_and_column_of_subslice(whole, sub);
+
+        assert_eq!(lines, 5);
+        assert_eq!(columns, 1);
+        assert_eq!(last_line, "");
+    }
+
+    #[test]
+    fn test_line_and_column_of_empty_string() {
+        let whole = "";
+        let sub = &whole[whole.len()..];
+
+        let (lines, columns, last_line) = get_line_and_column_of_subslice(whole, sub);
+
+        assert_eq!(lines, 1);
+        assert_eq!(columns, 1);
+        assert_eq!(last_line, "");
     }
 }

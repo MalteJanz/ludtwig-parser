@@ -1,6 +1,9 @@
 # NEXT-VERSION
 
 # v0.3.2
+- Hotfix: fixed another panic (attempt to subtract with overflow) for the parsing error line and column numbers reconstruction.
+
+# v0.3.2
 - Hotfix: fixed a panic (array index out of bounds) for the parsing error line and column numbers reconstruction.
 
 # v0.3.1
