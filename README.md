@@ -2,6 +2,8 @@
 ![GitHub](https://img.shields.io/github/license/MalteJanz/ludtwig-parser?color=blue&style=flat-square)
 ![Crates.io](https://img.shields.io/crates/v/ludtwig-parser?style=flat-square)
 ![Crates.io](https://img.shields.io/crates/d/ludtwig-parser?style=flat-square)
+## Moved into Ludtwig Repository
+> This repository contains outdated source code. This parser crate got a complete rewrite and is now located in the [ludtwig](https://github.com/MalteJanz/ludtwig) Repository
 
 Rust crate that parses twig / html / vue.js templating syntax into an AST (abstract syntax tree).
 It does not conform to any spec and the input is required to be as idiomatic as possible.
